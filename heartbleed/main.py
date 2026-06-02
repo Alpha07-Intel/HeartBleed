@@ -88,5 +88,19 @@ def report(
         export_to_json(investigation, path)
         logger.info(f"JSON export saved to: {path}")
 
+@app.command()
+def clear(
+    force: bool = typer.Option(False, "--force", "-f", help="Force deletion without confirmation")
+):
+    """Wipes the investigation history from the database."""
+    if not force:
+        confirm = typer.confirm("Are you sure you want to clear all investigation history?")
+        if not confirm:
+            logger.info("Operation cancelled.")
+            return
+            
+    db.clear_all()
+    logger.info("[bold green]All investigation history has been cleared.[/bold green]")
+
 if __name__ == "__main__":
     app()

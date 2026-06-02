@@ -19,7 +19,7 @@ REPORTS_DIR.mkdir(exist_ok=True)
 # Network Settings
 DEFAULT_TIMEOUT = 10
 MAX_RETRIES = 3
-USER_AGENT = "HeartBleed-OSINT-Toolkit/0.1.0 (+https://github.com/project-heartbleed)"
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
 # Correlation Thresholds
 MATCH_USERNAME_EXACT = 30

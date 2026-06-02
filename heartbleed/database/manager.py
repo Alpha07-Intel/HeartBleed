@@ -66,3 +66,10 @@ class DatabaseManager:
                 {"id": r[0], "timestamp": r[1], "type": r[2], "value": r[3]}
                 for r in cursor.fetchall()
             ]
+
+    def clear_all(self):
+        """Deletes all investigation records from the database."""
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM investigations")
+            conn.commit()
