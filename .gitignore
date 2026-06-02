@@ -155,3 +155,4 @@ heartbleed.db
 exports/reports/
 context.md
 gemini.sh
+gitpush.sh
