@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "heartbleed"
+version = "0.1.0"
+authors = [
+  { name="Senior Software Architect", email="architect@example.com" },
+]
+description = "A command-line OSINT toolkit for identity discovery and correlation."
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Security",
+]
+dependencies = [
+    "requests>=2.31.0",
+    "rich>=13.7.0",
+    "typer>=0.9.0",
+    "pydantic>=2.5.0",
+    "beautifulsoup4>=4.12.0",
+    "pillow>=10.1.0",
+    "imagehash>=4.3.1",
+]
+
+[project.scripts]
+heartbleed = "heartbleed.main:app"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["heartbleed*"]
