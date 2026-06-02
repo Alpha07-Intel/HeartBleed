@@ -14,6 +14,11 @@ app = typer.Typer(help="HeartBleed: Advanced OSINT Identity Correlation Toolkit"
 db = DatabaseManager()
 reporter = TerminalReporter()
 
+@app.callback()
+def main_callback():
+    """HeartBleed callback to print banner on every command."""
+    reporter.print_banner()
+
 @app.command()
 def scan(
     value: str = typer.Argument(..., help="The identifier to search for (e.g., username, email, name)"),

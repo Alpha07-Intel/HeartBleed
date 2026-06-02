@@ -9,6 +9,20 @@ class TerminalReporter:
     def __init__(self):
         self.console = Console()
 
+    def print_banner(self):
+        """Displays the HeartBleed ASCII banner and developer credits."""
+        banner = r"""
+[bold red]  _   _                      _   ____  _                 _ [/bold red]
+[bold red] | | | | ___  __ _ _ __  _| |_| __ )| | ___  ___  __| |[/bold red]
+[bold red] | |_| |/ _ \/ _` | '__| __|  _  |/ _ \/ _ \/ _` |[/bold red]
+[bold red] |  _  |  __/ (_| | |  | |_| |_) | |  __/  __/ (_| |[/bold red]
+[bold red] |_| |_|\___|\__,_|_|   \__|____/|_|\___|\___|\__,_|_|[/bold red]
+                                                      
+[bold white]        Advanced OSINT Identity Correlation Toolkit[/bold white]
+[bold cyan]              Developed by: Alpha-07[/bold cyan]
+        """
+        self.console.print(banner)
+
     def display_results(self, investigation: Investigation):
         """Prints a summary table and detailed correlation results."""
         self.console.print(f"\n[bold blue]Investigation Summary[/bold blue]")
