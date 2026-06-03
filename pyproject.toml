@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "heartbleed"
 version = "0.3.0"
 authors = [
-  { name="Senior Software Architect", email="architect@example.com" },
+  { name="Alpha-07 (Metis Labs)", email="intelligence.metislabs@gmail.com" },
 ]
 description = "A command-line OSINT toolkit for identity discovery and correlation."
 readme = "README.md"
