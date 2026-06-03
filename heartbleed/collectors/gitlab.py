@@ -4,12 +4,18 @@ from ..core.models import Profile, InputType
 from ..utils.network import fetch_url
 
 class GitLabCollector(BaseCollector):
+    def supports(self, input_type: InputType) -> bool:
+        return input_type in [InputType.USERNAME, InputType.EMAIL]
+
     def fetch(self, input_type: InputType, input_value: str) -> Optional[Profile]:
-        if input_type != InputType.USERNAME:
+        if input_type == InputType.USERNAME:
+            url = f"https://gitlab.com/api/v4/users?username={input_value}"
+        elif input_type == InputType.EMAIL:
+            # GitLab API allows searching users by email
+            url = f"https://gitlab.com/api/v4/users?search={input_value}"
+        else:
             return None
             
-        # GitLab API requires a search or direct username access via /users?username=
-        url = f"https://gitlab.com/api/v4/users?username={input_value}"
         response = fetch_url(url)
         
         if response:
@@ -33,7 +39,7 @@ class GitLabCollector(BaseCollector):
                     location=data.get("location"),
                     website=data.get("website_url"),
                     avatar=data.get("avatar_url"),
-                    followers=0, # GitLab public API doesn't easily show followers count in this endpoint
+                    followers=0,
                     url=data.get("web_url"),
                     raw_data=data
                 )

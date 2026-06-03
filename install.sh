@@ -35,7 +35,7 @@ echo "📦 Installing dependencies..."
 if [[ "$OSTYPE" == "linux-android" ]]; then
     echo "📱 Termux environment detected. Applying compatibility patches..."
     # We install dependencies individually to ensure pydantic v1 is prioritized
-    pip3 install requests rich typer "pydantic<2.0" beautifulsoup4 --quiet
+    pip3 install requests rich typer "pydantic<2.0" beautifulsoup4 fpdf --quiet
 else
     pip3 install -r requirements.txt --quiet
 fi

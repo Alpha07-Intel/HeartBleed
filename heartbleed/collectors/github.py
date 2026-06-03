@@ -4,15 +4,31 @@ from ..core.models import Profile, InputType
 from ..utils.network import fetch_url
 
 class GitHubCollector(BaseCollector):
+    def supports(self, input_type: InputType) -> bool:
+        return input_type in [InputType.USERNAME, InputType.EMAIL]
+
     def fetch(self, input_type: InputType, input_value: str) -> Optional[Profile]:
-        if input_type != InputType.USERNAME:
+        if input_type == InputType.USERNAME:
+            url = f"https://api.github.com/users/{input_value}"
+        elif input_type == InputType.EMAIL:
+            # GitHub API allows searching users by email
+            url = f"https://api.github.com/search/users?q={input_value}"
+        else:
             return None
             
-        url = f"https://api.github.com/users/{input_value}"
         response = fetch_url(url)
         
         if response:
             data = response.json()
+            
+            if input_type == InputType.EMAIL:
+                if data.get("total_count", 0) > 0:
+                    # Get the first match
+                    user_login = data["items"][0]["login"]
+                    # Fetch full profile for the login
+                    return self.fetch(InputType.USERNAME, user_login)
+                return None
+
             return Profile(
                 platform="GitHub",
                 username=data.get("login"),
