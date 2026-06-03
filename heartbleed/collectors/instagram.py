@@ -12,29 +12,32 @@ class InstagramCollector(BaseCollector):
             return None
             
         url = f"https://www.instagram.com/{input_value}/"
-        # We try to fetch the page and extract meta tags
         response = fetch_url(url)
         
         if response and response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
             
-            # Instagram often hides data, but OG tags might be present
+            # Extract Meta Tags
             meta_desc = soup.find("meta", property="og:description")
+            meta_image = soup.find("meta", property="og:image")
+            meta_title = soup.find("meta", property="og:title")
+            
             description = meta_desc["content"] if meta_desc else ""
+            avatar = meta_image["content"] if meta_image else None
             
-            # Example description: "1,234 Followers, 567 Following, 89 Posts - See Instagram photos and videos from Name (@username)"
             display_name = input_value
-            bio = description
-            
-            name_match = re.search(r"from (.*) \(@", description)
-            if name_match:
-                display_name = name_match.group(1)
-            
+            if meta_title:
+                # Meta title usually is "Name (@username) • Instagram photos and videos"
+                title_text = meta_title["content"]
+                if " (@" in title_text:
+                    display_name = title_text.split(" (@")[0]
+
             return Profile(
                 platform="Instagram",
                 username=input_value,
                 display_name=display_name,
-                bio=bio,
+                bio=description,
+                avatar=avatar,
                 url=url,
                 raw_data={"html_found": True}
             )
