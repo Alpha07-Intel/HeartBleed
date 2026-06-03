@@ -47,3 +47,10 @@ class Investigation(BaseModel):
             "input_value": self.input_value,
             "results_count": len(self.profiles)
         }
+
+class Workspace(BaseModel):
+    id: Optional[int] = None
+    name: str
+    description: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.now)
+    investigation_ids: List[int] = []

@@ -9,6 +9,7 @@ HeartBleed is a modular, high-performance command-line OSINT toolkit designed to
 - **Concurrent Collection**: Parallelized platform scanning for maximum speed.
 - **Identity Correlation**: Advanced scoring engine to determine profile ownership probability.
 - **Platform Support**: GitHub, GitLab, Reddit, Instagram, and X (Twitter).
+- **Multi-Target Workspaces**: Group related scans into projects for consolidated intelligence.
 - **Interactive Visualization**: Network relationship graphs in HTML reports (via Vis.js).
 - **Plugin Architecture**: Easily add new platform collectors as standalone modules.
 - **Persistent History**: SQLite backend to store investigation results and metadata.
@@ -47,8 +48,23 @@ chmod +x install.sh
 # Scan by username
 python3 -m heartbleed.main scan johndoe
 
-# Scan and generate all reports (including the Interactive Graph)
+# Scan and generate all reports immediately
 python3 -m heartbleed.main scan johndoe --json --html
+```
+
+### 🕸️ Multi-Target Workspaces
+Group multiple targets (e.g., aliases or members of a group) into one project for cross-target correlation.
+
+```bash
+# 1. Create a workspace
+python3 -m heartbleed.main workspace create "Project Hydra" --desc "Target Group Analysis"
+
+# 2. Add scans to the workspace (Workspace ID: 1)
+python3 -m heartbleed.main scan alias_01 --workspace 1
+python3 -m heartbleed.main scan alias_02 --workspace 1
+
+# 3. Generate a consolidated "Master Map" report
+python3 -m heartbleed.main workspace report 1
 ```
 
 ### Manage History
@@ -56,7 +72,10 @@ python3 -m heartbleed.main scan johndoe --json --html
 # List recent investigations
 python3 -m heartbleed.main list
 
-# Clear all investigation history
+# List all workspaces
+python3 -m heartbleed.main workspace list
+
+# Clear all investigation history and workspaces
 python3 -m heartbleed.main clear
 ```
 
@@ -75,6 +94,7 @@ HeartBleed is an OSINT tool. It must never be used for unauthorized access, cred
 ## 🗺️ Roadmap
 - [x] Support for Reddit, X, and Instagram.
 - [x] Graph-based visualization of correlations.
+- [x] Multi-target workspace mapping.
 - [ ] Avatar similarity engine (image hashing).
 - [ ] Search engine integration (Google/Bing).
-- [ ] Multi-target workspace.
+- [ ] AI-assisted bio summarization.
