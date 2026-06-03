@@ -2,7 +2,7 @@
 
 HeartBleed is a modular, high-performance command-line OSINT toolkit designed to discover and correlate publicly available social media and online accounts belonging to a target individual.
 
-**Developed by: Alpha-07**
+**Developed by: Alpha-07 (Metis Labs)**
 
 ## 🚀 Features
 

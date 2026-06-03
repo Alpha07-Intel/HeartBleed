@@ -19,7 +19,7 @@ class TerminalReporter:
 [bold red] |_| |_|\___|\__,_|_|   \__|____/|_|\___|\___|\__,_|_|[/bold red]
                                                       
 [bold white]        Advanced OSINT Identity Correlation Toolkit [bold green]v0.3[/bold green][/bold white]
-[bold cyan]              Developed by: Alpha-07[/bold cyan]
+[bold cyan]              Developed by: Alpha-07 (Metis Labs)[/bold cyan]
         """
         self.console.print(banner)
 
