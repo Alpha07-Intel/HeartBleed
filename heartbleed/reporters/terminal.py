@@ -55,3 +55,16 @@ class TerminalReporter:
             if res.match_reasons:
                 reasons = ", ".join(res.match_reasons)
                 self.console.print(f"* [cyan]{res.target_profile.platform}[/cyan]: {reasons}")
+
+        # Persona Profile
+        if investigation.persona_profile:
+            self.console.print("\n[bold blue]Persona Profile (Local Analysis)[/bold blue]")
+            for category, keywords in investigation.persona_profile.items():
+                if keywords:
+                    self.console.print(f"* [bold]{category}[/bold]: {', '.join(keywords)}")
+
+        # Dorks
+        if investigation.dorks:
+            self.console.print("\n[bold yellow]Investigative Resources (Google Dorks)[/bold yellow]")
+            for dork in investigation.dorks:
+                self.console.print(f"* [bold]{dork['name']}[/bold]: {dork['url']}")

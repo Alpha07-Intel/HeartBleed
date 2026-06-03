@@ -39,6 +39,8 @@ class Investigation(BaseModel):
     input_value: str
     profiles: List[Profile] = []
     correlations: List[CorrelationResult] = []
+    dorks: List[Dict[str, str]] = []
+    persona_profile: Dict[str, List[str]] = {}
     
     def get_summary(self) -> Dict[str, Any]:
         return {

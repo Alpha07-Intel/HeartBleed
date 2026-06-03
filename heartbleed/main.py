@@ -28,13 +28,14 @@ def scan(
     type: InputType = typer.Option(InputType.USERNAME, "--type", "-t", help="Type of input"),
     json: bool = typer.Option(False, "--json", help="Export results to JSON immediately"),
     html: bool = typer.Option(False, "--html", help="Generate HTML report immediately"),
-    workspace: Optional[int] = typer.Option(None, "--workspace", "-ws", help="Add this scan to a specific workspace ID")
+    workspace: Optional[int] = typer.Option(None, "--workspace", "-ws", help="Add this scan to a specific workspace ID"),
+    mutate: bool = typer.Option(False, "--mutate", "-m", help="Automatically search for common username variations")
 ):
     """
     Scans multiple platforms for a given identifier and correlates results.
     """
     engine = SearchEngine()
-    investigation = engine.run(type, value)
+    investigation = engine.run(type, value, mutate=mutate)
     
     # Save to DB
     inv_id = db.save_investigation(investigation)

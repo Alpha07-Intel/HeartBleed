@@ -42,7 +42,7 @@ def generate_html_report(investigation: Investigation, output_path: Path):
             "label": str(res.score)
         })
 
-    # Shared Metadata Edges (Intra-target)
+    # Shared Metadata Edges
     for i in range(len(investigation.correlations)):
         for j in range(i + 1, len(investigation.correlations)):
             p1 = investigation.correlations[i].target_profile
@@ -58,7 +58,7 @@ def generate_html_report(investigation: Investigation, output_path: Path):
 
     html_template = _get_html_template(
         title=f"HeartBleed Report - {investigation.input_value}",
-        header_title=f"🩸 HeartBleed v0.1 - Intelligence Report",
+        header_title=f"🩸 HeartBleed v0.2 - Intelligence Report",
         header_subtitle=f"Target: {investigation.input_value}",
         stats=[
             ("Target", investigation.input_value),
@@ -67,7 +67,9 @@ def generate_html_report(investigation: Investigation, output_path: Path):
         ],
         nodes_json=json.dumps(nodes),
         edges_json=json.dumps(edges),
-        results_html=_generate_results_table(investigation.correlations)
+        results_html=_generate_results_table(investigation.correlations),
+        persona_profile=investigation.persona_profile,
+        dorks=investigation.dorks
     )
     
     with open(output_path, "w", encoding="utf-8") as f:
@@ -75,13 +77,14 @@ def generate_html_report(investigation: Investigation, output_path: Path):
     return output_path
 
 def generate_workspace_report(workspace: Workspace, investigations: List[Investigation], output_path: Path):
-    """Generates an advanced consolidated report with Hub Mapping for workspaces."""
+    """Generates a consolidated report for workspaces."""
     nodes = []
     edges = []
-    unique_profiles = {} # Key: (platform, username) -> node_id
+    unique_profiles = {}
     all_correlations = []
+    all_dorks = []
+    all_persona_data = {"Roles": set(), "Tech Stack": set(), "Social/Interests": set()}
     
-    # 1. Add Target Nodes
     for inv in investigations:
         target_node_id = f"target_{inv.id}"
         nodes.append({
@@ -93,14 +96,17 @@ def generate_workspace_report(workspace: Workspace, investigations: List[Investi
             "font": {"size": 16, "color": "#ffffff"}
         })
         
-        # 2. Add Profile Nodes (with deduplication / Hub logic)
+        # Merge Persona Data
+        if inv.persona_profile:
+            for k, v in inv.persona_profile.items():
+                if k in all_persona_data: all_persona_data[k].update(v)
+
         for i, res in enumerate(inv.correlations):
             all_correlations.append(res)
             p = res.target_profile
             profile_key = (p.platform.lower(), p.username.lower())
             
             if profile_key not in unique_profiles:
-                # Create a new node for this unique account
                 node_id = f"profile_unique_{len(unique_profiles)}"
                 unique_profiles[profile_key] = node_id
                 
@@ -112,62 +118,33 @@ def generate_workspace_report(workspace: Workspace, investigations: List[Investi
                 nodes.append({
                     "id": node_id,
                     "label": f"{p.platform}\n({p.username})",
-                    "color": color,
-                    "title": f"Discovery Details:<br>Platform: {p.platform}<br>User: {p.username}"
+                    "color": color
                 })
             
-            # Draw edge from THIS target to the (possibly shared) profile node
             edges.append({
                 "from": target_node_id,
                 "to": unique_profiles[profile_key],
                 "width": max(1, res.score / 10),
-                "label": str(res.score),
-                "title": f"Correlation for {inv.input_value}: {res.score}"
+                "label": str(res.score)
             })
 
-    # 3. Cross-Target Metadata Edges (Shared Location/Website across targets)
-    # Get flat list of all unique profile objects we have
-    profile_list = []
-    for inv in investigations:
-        for res in inv.correlations:
-            p = res.target_profile
-            profile_list.append({"p": p, "node_id": unique_profiles[(p.platform.lower(), p.username.lower())]})
-
-    for i in range(len(profile_list)):
-        for j in range(i + 1, len(profile_list)):
-            p1_data, p2_data = profile_list[i], profile_list[j]
-            p1, p2 = p1_data["p"], p2_data["p"]
-            
-            # Only connect DIFFERENT nodes (don't connect a node to itself)
-            if p1_data["node_id"] == p2_data["node_id"]:
-                continue
-                
-            shared = []
-            if p1.website and p2.website and p1.website.lower() == p2.website.lower(): shared.append("Website")
-            if p1.location and p2.location and p1.location.lower() == p2.location.lower(): shared.append("Location")
-            
-            if shared:
-                edges.append({
-                    "from": p1_data["node_id"],
-                    "to": p2_data["node_id"],
-                    "dashes": True,
-                    "color": "#8e44ad",
-                    "width": 2,
-                    "label": " & ".join(shared)
-                })
+    # Workspace-level Persona
+    persona_final = {k: sorted(list(v)) for k, v in all_persona_data.items()}
 
     html_template = _get_html_template(
         title=f"HeartBleed Workspace Report - {workspace.name}",
         header_title=f"🩸 Workspace Hub: {workspace.name}",
-        header_subtitle=workspace.description or "Consolidated Identity Mapping",
+        header_subtitle="Consolidated Multi-Target Mapping",
         stats=[
             ("Targets", str(len(investigations))),
-            ("Shared Profiles", str(len(unique_profiles))),
+            ("Unique Profiles", str(len(unique_profiles))),
             ("Created", workspace.created_at.strftime('%Y-%m-%d'))
         ],
         nodes_json=json.dumps(nodes),
         edges_json=json.dumps(edges),
-        results_html=_generate_results_table(all_correlations)
+        results_html=_generate_results_table(all_correlations),
+        persona_profile=persona_final,
+        dorks=[] # Workspace doesn't have consolidated dorks yet
     )
 
     with open(output_path, "w", encoding="utf-8") as f:
@@ -183,8 +160,26 @@ def _generate_results_table(correlations) -> str:
     html += "</tbody></table>"
     return html
 
-def _get_html_template(title, header_title, header_subtitle, stats, nodes_json, edges_json, results_html) -> str:
+def _get_html_template(title, header_title, header_subtitle, stats, nodes_json, edges_json, results_html, persona_profile=None, dorks=None) -> str:
     stats_html = "".join([f'<div class="stat-item"><div class="stat-label">{l}</div><div class="stat-value">{v}</div></div>' for l, v in stats])
+    
+    # Persona Card
+    persona_html = ""
+    if persona_profile:
+        persona_html = '<div class="card"><h2>🧠 Persona Profile (Auto-Analyzed)</h2><div class="stats-grid">'
+        for cat, kws in persona_profile.items():
+            if kws:
+                persona_html += f'<div class="stat-item"><strong>{cat}:</strong><br><small>{", ".join(kws)}</small></div>'
+        persona_html += '</div></div>'
+
+    # Dorks Card
+    dorks_html = ""
+    if dorks:
+        dorks_html = '<div class="card"><h2>🔍 Investigative Resources (Dorks)</h2><div class="dorks-grid">'
+        for d in dorks:
+            dorks_html += f'<div class="dork-item"><strong>{d["name"]}</strong><p>{d["description"]}</p><a href="{d["url"]}" target="_blank" class="dork-btn">Search on Google ↗</a></div>'
+        dorks_html += '</div></div>'
+
     return f"""
     <!DOCTYPE html>
     <html lang="en">
@@ -201,10 +196,11 @@ def _get_html_template(title, header_title, header_subtitle, stats, nodes_json, 
             .stats-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }}
             .stat-item {{ border-left: 5px solid #c0392b; padding-left: 20px; background: #fff8f8; padding: 15px; border-radius: 0 8px 8px 0; }}
             .stat-value {{ font-size: 22px; font-weight: bold; color: #c0392b; }}
-            #network-graph {{ height: 700px; border: 1px solid #ddd; background: #ffffff; border-radius: 12px; }}
-            .legend {{ display: flex; gap: 20px; margin-top: 15px; font-size: 13px; justify-content: center; }}
-            .legend-item {{ display: flex; align-items: center; gap: 8px; }}
-            .dot {{ width: 12px; height: 12px; border-radius: 50%; }}
+            #network-graph {{ height: 600px; border: 1px solid #ddd; background: #ffffff; border-radius: 12px; }}
+            .dorks-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; }}
+            .dork-item {{ border: 1px solid #eee; padding: 15px; border-radius: 8px; }}
+            .dork-btn {{ display: inline-block; background: #3498db; color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none; margin-top: 10px; font-size: 13px; }}
+            .dork-btn:hover {{ background: #2980b9; }}
             table {{ width: 100%; border-collapse: collapse; margin-top: 20px; }}
             th, td {{ padding: 15px; text-align: left; border-bottom: 1px solid #eee; }}
             th {{ background: #f8f9fa; color: #666; font-size: 12px; }}
@@ -220,19 +216,14 @@ def _get_html_template(title, header_title, header_subtitle, stats, nodes_json, 
                 <p>{header_subtitle}</p>
             </header>
             <div class="card"><div class="stats-grid">{stats_html}</div></div>
+            {persona_html}
+            {dorks_html}
             <div class="card">
                 <h2>🕸️ Identity Intelligence Graph</h2>
                 <div id="network-graph"></div>
-                <div class="legend">
-                    <div class="legend-item"><div class="dot" style="background: #e74c3c; border-radius: 2px;"></div> Target</div>
-                    <div class="legend-item"><div class="dot" style="background: #2ecc71;"></div> Very High Confidence</div>
-                    <div class="legend-item"><div class="dot" style="background: #3498db;"></div> High Confidence</div>
-                    <div class="legend-item"><div class="dot" style="background: #f1c40f;"></div> Medium Confidence</div>
-                    <div class="legend-item"><div class="dot" style="background: #95a5a6;"></div> Low Confidence</div>
-                </div>
             </div>
             <div class="card"><h2>📄 Discovery Details</h2>{results_html}</div>
-            <div class="footer">Generated by HeartBleed v0.1 • Developed by Alpha-07</div>
+            <div class="footer">Generated by HeartBleed v0.2 • Developed by Alpha-07</div>
         </div>
         <script type="text/javascript">
             var nodes = new vis.DataSet({nodes_json});
