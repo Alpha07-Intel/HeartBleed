@@ -19,7 +19,7 @@ REPORTS_DIR.mkdir(exist_ok=True)
 # Network Settings
 DEFAULT_TIMEOUT = 10
 MAX_RETRIES = 3
-USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 (HeartBleed OSINT v0.1)"
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 (HeartBleed OSINT v0.2)"
 
 # Correlation Thresholds
 MATCH_USERNAME_EXACT = 30
