@@ -11,8 +11,10 @@ from .exports.pdf_export import export_to_pdf
 from .config import REPORTS_DIR, EXPORTS_DIR
 from .utils.logger import logger
 
+from . import __version__
+
 # App and Command Groups
-app = typer.Typer(help="HeartBleed: Advanced OSINT Identity Correlation Toolkit")
+app = typer.Typer(help=f"HeartBleed v{__version__}: Advanced OSINT Identity Correlation Toolkit")
 workspace_app = typer.Typer(help="Manage multi-target investigation workspaces")
 domain_app = typer.Typer(help="Domain intelligence and analysis modules")
 
@@ -22,10 +24,24 @@ app.add_typer(domain_app, name="domain")
 db = DatabaseManager()
 reporter = TerminalReporter()
 
+def version_callback(value: bool):
+    if value:
+        typer.echo(f"HeartBleed v{__version__}")
+        raise typer.Exit()
+
 @app.callback()
-def main_callback():
+def main_callback(
+    version: Optional[bool] = typer.Option(
+        None, "--version", "-v", help="Show version and exit.", callback=version_callback
+    )
+):
     """HeartBleed callback to print banner on every command."""
     reporter.print_banner()
+
+@app.command()
+def version():
+    """Shows the version of HeartBleed."""
+    typer.echo(f"HeartBleed v{__version__}")
 
 @app.command()
 def scan(

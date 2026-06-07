@@ -30,27 +30,18 @@ if ! command -v pip3 &> /dev/null; then
     fi
 fi
 
-# 3. Handle Termux specifics and Rust/Maturin issues for Pydantic
-echo "📦 Installing dependencies..."
-if [[ "$OSTYPE" == "linux-android" ]]; then
-    echo "📱 Termux environment detected. Applying compatibility patches..."
-    # We install dependencies individually to ensure pydantic v1 is prioritized
-    pip3 install requests rich typer "pydantic<2.0" beautifulsoup4 fpdf --quiet
-else
-    pip3 install -r requirements.txt --quiet
-fi
+# 3. Install HeartBleed as a package
+echo "📦 Installing HeartBleed..."
+pip3 install . --quiet
 
-# 4. Set up directory structure (just in case)
-mkdir -p exports/reports
-
-# 5. Finalize
+# 4. Finalize
 echo "✅ Installation Complete!"
 echo ""
 echo "🚀 To start using HeartBleed, run:"
-echo "   python3 -m heartbleed.main scan [username]"
+echo "   heartbleed scan [username]"
 echo ""
 echo "Example:"
-echo "   python3 -m heartbleed.main scan johndoe"
+echo "   heartbleed scan johndoe"
 echo ""
 echo "For help:"
-echo "   python3 -m heartbleed.main --help"
+echo "   heartbleed --help"

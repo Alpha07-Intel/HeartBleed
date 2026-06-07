@@ -1,8 +1,27 @@
-# HeartBleed OSINT Toolkit 🩸 v0.3
+# HeartBleed OSINT Toolkit 🩸
+
+[![PyPI version](https://img.shields.io/pypi/v/heartbleed-osint.svg)](https://pypi.org/project/heartbleed-osint/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 
 HeartBleed is a modular, high-performance command-line OSINT toolkit designed to discover and correlate publicly available social media and online accounts belonging to a target individual.
 
 **Developed by: Alpha-07 (Metis Labs)**
+
+---
+
+## 📑 Table of Contents
+- [🚀 Features](#-features)
+- [🛠️ Architecture](#️-architecture)
+- [📦 Installation](#-installation)
+- [📖 Usage](#-usage)
+- [🌐 Domain Intelligence](#-domain-intelligence)
+- [📄 Professional Export](#-professional-export)
+- [🕸️ Multi-Target Workspaces](#️-multi-target-workspaces)
+- [🛡️ Security & Ethics](#️-security--ethics)
+- [🗺️ Roadmap](#️-roadmap)
+
+---
 
 ## 🚀 Features
 
@@ -36,48 +55,55 @@ HeartBleed follows **Clean Architecture** principles:
 - Python 3.11+
 - Pip
 
-### Quick Setup (Linux & Termux)
+### Recommended Setup (Pip)
+You can install HeartBleed directly from PyPI:
+```bash
+pip install heartbleed-osint
+```
+
+### Installation from Source
 ```bash
 git clone https://github.com/Alpha07-Intel/HeartBleed.git
 cd HeartBleed
-chmod +x install.sh
-./install.sh
+pip install .
 ```
+
+This will install the `heartbleed` command globally.
 
 ## 📖 Usage
 
 ### Basic Scan
 ```bash
 # Scan by username
-python3 -m heartbleed.main scan johndoe
+heartbleed scan johndoe
 
-# Scan by email (v0.3)
-python3 -m heartbleed.main scan user@example.com --type email
+# Scan by email
+heartbleed scan user@example.com --type email
 ```
 
-### 🌐 Domain Intelligence (v0.3)
+### 🌐 Domain Intelligence
 Analyze a domain's footprint, records, and subdomains.
 ```bash
-python3 -m heartbleed.main domain scan example.com
+heartbleed domain scan example.com
 ```
 
-### 📄 Professional Export (v0.3)
+### 📄 Professional Export
 Generate a PDF report for your investigation.
 ```bash
 # Export existing investigation ID 1 to PDF
-python3 -m heartbleed.main report 1 --format pdf
+heartbleed report 1 --format pdf
 ```
 
 ### 🕸️ Multi-Target Workspaces
 ```bash
 # Create a workspace and add targets to it
-python3 -m heartbleed.main workspace create "Case 001"
-python3 -m heartbleed.main scan alias_1 --workspace 1 --mutate
-python3 -m heartbleed.main workspace report 1
+heartbleed workspace create "Case 001"
+heartbleed scan alias_1 --workspace 1 --mutate
+heartbleed workspace report 1
 ```
 
 ## 🛡️ Security & Ethics
-HeartBleed is an OSINT tool. It must never be used for unauthorized access. All information collected originates from publicly accessible sources.
+HeartBleed is an OSINT tool. It must never be used for unauthorized access or stalking. All information collected originates from publicly accessible sources. Users are responsible for complying with local laws and the terms of service of the platforms being scanned.
 
 ## 🗺️ Roadmap
 - [x] Support for Reddit, X, and Instagram.

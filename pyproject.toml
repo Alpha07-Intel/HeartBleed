@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "heartbleed"
+name = "heartbleed-osint"
 version = "0.3.0"
 authors = [
   { name="Alpha-07 (Metis Labs)", email="intelligence.metislabs@gmail.com" },
@@ -24,6 +24,7 @@ dependencies = [
     "pydantic>=1.10.0,<2.0.0",
     "beautifulsoup4>=4.12.0",
     "fpdf>=1.7.2",
+    "platformdirs>=4.0.0",
     ]
 
 [project.scripts]
