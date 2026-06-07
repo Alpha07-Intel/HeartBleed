@@ -4,9 +4,10 @@ from ..core.models import Investigation
 
 class HeartBleedPDF(FPDF):
     def header(self):
+        from .. import __version__
         self.set_font('Arial', 'B', 15)
         self.set_text_color(192, 57, 43) # HeartBleed Red
-        self.cell(0, 10, 'HEARTBLEED OSINT REPORT - v0.3', 0, 1, 'C')
+        self.cell(0, 10, f'HEARTBLEED OSINT REPORT - v{__version__}', 0, 1, 'C')
         self.ln(5)
 
     def footer(self):

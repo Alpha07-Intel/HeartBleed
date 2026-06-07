@@ -11,17 +11,19 @@ class TerminalReporter:
 
     def print_banner(self):
         """Displays the HeartBleed ASCII banner and developer credits."""
-        banner = r"""
-[bold red]  _   _                      _   ____  _                 _ [/bold red]
-[bold red] | | | | ___  __ _ _ __  _| |_| __ )| | ___  ___  __| |[/bold red]
-[bold red] | |_| |/ _ \/ _` | '__| __|  _  |/ _ \/ _ \/ _` |[/bold red]
-[bold red] |  _  |  __/ (_| | |  | |_| |_) | |  __/  __/ (_| |[/bold red]
-[bold red] |_| |_|\___|\__,_|_|   \__|____/|_|\___|\___|\__,_|_|[/bold red]
-                                                      
-[bold white]        Advanced OSINT Identity Correlation Toolkit [bold green]v0.3[/bold green][/bold white]
-[bold cyan]              Developed by: Alpha-07 (Metis Labs)[/bold cyan]
-        """
-        self.console.print(banner)
+        from .. import __version__
+        from rich.align import Align
+        
+        banner_text = r"""[bold red]
+  _  _                 _   ___  _              _ 
+ | || | ___ __ _ _ _ _| |_| _ )| | ___ ___  __| |
+ | __ |/ -_) _` | '_|  _| _ \| |/ -_) -_) _` |
+ |_||_|\___\__,_|_|  \__|___/|_|\___\___\__,_|[/bold red]
+
+[bold white]Advanced OSINT Identity Correlation Toolkit[/bold white] [bold green]v{version}[/bold green]
+[bold cyan]Developed by: Alpha-07 (Metis Labs)[/bold cyan]
+""".format(version=__version__)
+        self.console.print(Panel(Align.center(banner_text), border_style="red", expand=False))
 
     def display_results(self, investigation: Investigation):
         """Prints a summary table and detailed correlation results."""
